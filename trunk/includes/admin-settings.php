@@ -44,6 +44,33 @@ function verselinker_register_settings() {
             'default'           => true,
         )
     );
+    register_setting(
+        'verselinker_options',
+        'verselinker_keep_default_exclusions',
+        array(
+            'type'              => 'boolean',
+            'sanitize_callback' => 'verselinker_sanitize_checkbox',
+            'default'           => true,
+        )
+    );
+    register_setting(
+        'verselinker_options',
+        'verselinker_excluded_classes',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'verselinker_sanitize_exclusion_list',
+            'default'           => '',
+        )
+    );
+    register_setting(
+        'verselinker_options',
+        'verselinker_excluded_ids',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'verselinker_sanitize_exclusion_list',
+            'default'           => '',
+        )
+    );
 }
 add_action('admin_init', 'verselinker_register_settings');
 
@@ -75,6 +102,15 @@ function verselinker_options_page() {
     $verseLinker_data_trueTooltip = filter_var(get_option('verseLinker_data_trueTooltip', true), FILTER_VALIDATE_BOOLEAN);
     $verseLinker_data_trueCredit = filter_var(get_option('verseLinker_data_trueCredit', false), FILTER_VALIDATE_BOOLEAN);
     $verseLinker_data_trueLinks = filter_var(get_option('verseLinker_data_trueLinks', true), FILTER_VALIDATE_BOOLEAN);
+    $verselinker_keep_default_exclusions = verselinker_sanitize_checkbox(
+        get_option('verselinker_keep_default_exclusions', true)
+    );
+    $verselinker_excluded_classes = verselinker_sanitize_exclusion_list(
+        get_option('verselinker_excluded_classes', '')
+    );
+    $verselinker_excluded_ids = verselinker_sanitize_exclusion_list(
+        get_option('verselinker_excluded_ids', '')
+    );
 
 
     include VERSELINKER_PATH . 'includes/templates/admin-options.php';
