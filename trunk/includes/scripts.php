@@ -4,13 +4,49 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Construir los atributos de exclusión compartidos por frontend y vista previa.
+function verselinker_get_exclusion_script_attributes() {
+    $keep_default_exclusions = verselinker_sanitize_checkbox(
+        get_option('verselinker_keep_default_exclusions', true)
+    ) ? 'true' : 'false';
+    $excluded_classes = verselinker_exclusion_list_to_array(
+        get_option('verselinker_excluded_classes', '')
+    );
+    $excluded_ids = verselinker_exclusion_list_to_array(
+        get_option('verselinker_excluded_ids', '')
+    );
+    $excluded_classes_json = wp_json_encode($excluded_classes);
+    $excluded_ids_json = wp_json_encode($excluded_ids);
+
+    if ($excluded_classes_json === false) {
+        $excluded_classes_json = '[]';
+    }
+    if ($excluded_ids_json === false) {
+        $excluded_ids_json = '[]';
+    }
+
+    $attributes = ' data-keep-default-exclusions="' . esc_attr($keep_default_exclusions) . '"';
+    $attributes .= ' data-excluded-classes="' . esc_attr($excluded_classes_json) . '"';
+    $attributes .= ' data-excluded-ids="' . esc_attr($excluded_ids_json) . '"';
+
+    return $attributes;
+}
+
 // Agregar scripts al frontend
 function verselinker_enqueue_frontend_scripts() {
+    wp_enqueue_script(
+        'verselinker-exclusions',
+        VERSELINKER_URL . 'assets/js/verselinker-exclusions.js',
+        [],
+        VERSELINKER_VERSION,
+        true
+    );
+
     // Cargar el script principal del frontend
     wp_enqueue_script(
         'verselinker-frontend',
         VERSELINKER_URL . 'assets/js/verselinker.js', // Ruta del archivo JS
-        [], // Dependencias
+        ['verselinker-exclusions'], // Dependencias
         VERSELINKER_VERSION, // Versión del plugin
         true // Cargar en el footer
     );
@@ -53,6 +89,7 @@ function verselinker_add_attributes_to_script($tag, $handle, $src) {
         if ($data_trueLinks === 'false') {
             $attributes .= ' data-trueLinks="false"';
         }
+        $attributes .= verselinker_get_exclusion_script_attributes();
 
         // Modificar la etiqueta script
         $tag = str_replace('<script ', '<script ' . $attributes . ' ', $tag);
@@ -100,11 +137,19 @@ function verselinker_enqueue_admin_scripts($hook) {
         ],
     ]);
 
+    wp_enqueue_script(
+        'verselinker-exclusions',
+        VERSELINKER_URL . 'assets/js/verselinker-exclusions.js',
+        [],
+        VERSELINKER_VERSION,
+        true
+    );
+
     // Cargar el script para detección de referencias bíblicas
     wp_enqueue_script(
         'verselinker',
         VERSELINKER_URL . 'assets/js/verselinker.js', // Ruta local del archivo
-        [],
+        ['verselinker-exclusions'],
         VERSELINKER_VERSION, // Usar la constante de versión del plugin
         true
     );
@@ -136,6 +181,7 @@ function verselinker_add_attributes_to_admin_script($tag, $handle, $src) {
         if ($data_trueLinks === 'false') {
             $attributes .= ' data-trueLinks="false"';
         }
+        $attributes .= verselinker_get_exclusion_script_attributes();
 
         // Modificar la etiqueta script
         $tag = str_replace('<script ', '<script ' . $attributes . ' ', $tag);

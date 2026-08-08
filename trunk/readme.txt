@@ -85,9 +85,19 @@ VerseLinker is designed for ease of use and integrates seamlessly into your Word
     *   **Simple Link Mode:** Only links the Bible references to the corresponding study page on BibliaTodo.com. No data is sent to the API in this mode.
 3.  **Select your default Bible version:** Choose the version that will be used for displaying verse text (e.g., NIV, KJV, ESV). You can find a complete list of available versions here: [link a la lista de versiones de bibliatodo.com]
 4.  **Select your default language:** Choose the language for the verse text. VerseLinker supports over 3520 versions of the Bible in 2214 languages. You can find the list of supported languages on the VerseLinker page: [https://www.bibliatodo.com/en/verselinker](https://www.bibliatodo.com/en/verselinker)
-5.  Click "Save Changes".
+5.  **Configure exclusions if needed:** The legacy default exclusion rules are enabled by default to preserve existing behavior. These rules include substring matching for `sidebar` and `widget` in class names and IDs. If a theme, plugin, or custom markup uses a conflicting name, disable the legacy rules and enter explicit class names or IDs instead.
+6.  Click "Save Changes".
 
-**3. How VerseLinker Detects Bible References:**
+**3. Configuring Excluded Class Names and IDs:**
+
+*   **Legacy default exclusions:** Enabled by default. Disable them only when their broad substring matching unintentionally excludes content.
+*   **Additional class names:** Enter one class name per line without a leading `.`. Additional classes use exact class-token matching, not substring matching.
+*   **Additional IDs:** Enter one ID per line without a leading `#`. Additional IDs use exact ID matching, not substring matching.
+*   Class names and IDs may contain ASCII letters, numbers, hyphens, and underscores. Each list accepts up to 100 names, with a maximum length of 128 characters per name.
+*   Additional class names and IDs remain active whether the legacy default exclusions are enabled or disabled.
+*   When the legacy rules are disabled, add `sidebar` and `widget` explicitly as additional class names if those exact class tokens should still be excluded.
+
+**4. How VerseLinker Detects Bible References:**
 
 VerseLinker automatically scans your content for various formats of Bible references, including:
 
@@ -99,7 +109,7 @@ VerseLinker automatically scans your content for various formats of Bible refere
 *   **Verses in groups:** `Ecclesiastes 11:1-3,10,5`, `Romans 8:28,38-39`
 *   **Multiple books and combinations:** `1 John 1:1-4; Matthew 2:2,6-7`, `Genesis 1; Exodus 20:1-17; Psalm 23`
 
-**4. Specifying a Bible Version:**
+**5. Specifying a Bible Version:**
 
 You can specify a particular Bible version for a reference by adding the version abbreviation in parentheses after the reference. For example:
 
@@ -139,6 +149,9 @@ You can report issues or suggest features by contacting us through our website: 
 = 1.1.12 =
 * Fixed: The settings page now keeps the saved Bible version selected after reloading.
 * Fixed: Removed duplicate registration of the Bible version setting.
+* Added: Configurable excluded class names and IDs.
+* Added: An option to enable or disable the legacy built-in exclusion rules.
+* Added: A way to avoid overbroad built-in substring matching without changing the default behavior for existing installations.
 
 = 1.0.9 =
 * Improved compatibility with other plugins, especially Modern Footnotes.
