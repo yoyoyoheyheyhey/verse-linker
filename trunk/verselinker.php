@@ -23,6 +23,7 @@ define('VERSELINKER_VERSION', '1.1.12');
 
 // Incluir archivos
 require_once VERSELINKER_PATH . 'includes/helpers.php';
+require_once VERSELINKER_PATH . 'includes/language-routing.php';
 require_once VERSELINKER_PATH . 'includes/scripts.php';
 require_once VERSELINKER_PATH . 'includes/admin-settings.php';
 

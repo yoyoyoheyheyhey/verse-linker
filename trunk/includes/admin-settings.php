@@ -16,6 +16,24 @@ function verselinker_register_settings() {
         'sanitize_callback' => 'verselinker_sanitize_version_for_language',
         'default'           => 'KJV'
     ));
+    register_setting(
+        'verselinker_options',
+        'verselinker_language_resolution_mode',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'verselinker_sanitize_language_resolution_mode',
+            'default'           => 'fixed',
+        )
+    );
+    register_setting(
+        'verselinker_options',
+        'verselinker_language_routes',
+        array(
+            'type'              => 'array',
+            'sanitize_callback' => 'verselinker_sanitize_language_routes',
+            'default'           => array(),
+        )
+    );
 
     register_setting(
         'verselinker_options',
@@ -99,6 +117,20 @@ function verselinker_options_page() {
 
     $selected_language = sanitize_text_field(get_option('verselinker_language', 'en'));
     $selected_version = sanitize_text_field(get_option('verselinker_version', ''));
+    $verselinker_language_resolution_mode = verselinker_sanitize_language_resolution_mode(
+        get_option('verselinker_language_resolution_mode', 'fixed')
+    );
+    $verselinker_language_routes = verselinker_sanitize_language_routes(
+        get_option('verselinker_language_routes', array())
+    );
+    $verselinker_language_lookup = array();
+
+    foreach ($idiomas['languages'] as $language) {
+        if (!empty($language['abreviacion']) && is_string($language['abreviacion'])) {
+            $verselinker_language_lookup[$language['abreviacion']] = $language;
+        }
+    }
+
     $verseLinker_data_trueTooltip = filter_var(get_option('verseLinker_data_trueTooltip', true), FILTER_VALIDATE_BOOLEAN);
     $verseLinker_data_trueCredit = filter_var(get_option('verseLinker_data_trueCredit', false), FILTER_VALIDATE_BOOLEAN);
     $verseLinker_data_trueLinks = filter_var(get_option('verseLinker_data_trueLinks', true), FILTER_VALIDATE_BOOLEAN);

@@ -300,8 +300,125 @@
     }
   }
 
+  function populateLanguageSelect(select, languages, preferredLanguage) {
+    var languageItems = getLanguageItems(select, languages);
+    var preferred = optionValue(preferredLanguage);
+    var matchedPreferred = false;
+
+    clearSelect(select);
+
+    languageItems.forEach(function(language) {
+      var option = document.createElement('option');
+      option.value = language.value;
+      setText(option, language.label || language.value);
+
+      if (language.value === preferred) {
+        option.selected = true;
+        matchedPreferred = true;
+      }
+
+      select.appendChild(option);
+    });
+
+    if (matchedPreferred) {
+      select.value = preferred;
+    } else if (select.options.length) {
+      select.selectedIndex = 0;
+    }
+  }
+
+  function initLanguageRoutes(languages) {
+    var modeSelect = document.getElementById('verselinker_language_resolution_mode');
+    var routesSetting = document.getElementById('verselinker_language_routes_setting');
+    var routesBody = document.getElementById('verselinker_language_routes_rows');
+    var routeTemplate = document.getElementById('verselinker_language_route_template');
+    var addButton = document.getElementById('verselinker_add_language_route');
+
+    if (!modeSelect || !routesSetting || !routesBody || !routeTemplate || !addButton) {
+      return;
+    }
+
+    var labels = getLabels();
+    var maxRoutes = 20;
+    var selected = getConfig().selected || {};
+
+    function getRows() {
+      return Array.prototype.slice.call(
+        routesBody.querySelectorAll('[data-verselinker-language-route]')
+      );
+    }
+
+    function reindexRows() {
+      getRows().forEach(function(row, index) {
+        row.querySelector('.verselinker-route-path').name =
+          'verselinker_language_routes[' + index + '][path]';
+        row.querySelector('.verselinker-route-language').name =
+          'verselinker_language_routes[' + index + '][language]';
+        row.querySelector('.verselinker-route-version').name =
+          'verselinker_language_routes[' + index + '][version]';
+      });
+
+      addButton.disabled = getRows().length >= maxRoutes;
+    }
+
+    function initializeRow(row) {
+      var languageSelect = row.querySelector('.verselinker-route-language');
+      var versionSelect = row.querySelector('.verselinker-route-version');
+      var removeButton = row.querySelector('.verselinker-remove-language-route');
+      var preferredLanguage = optionValue(languageSelect.getAttribute('data-selected')) ||
+        optionValue(selected.lang);
+      var preferredVersion = optionValue(versionSelect.getAttribute('data-selected')) ||
+        (preferredLanguage === optionValue(selected.lang) ? optionValue(selected.ver) : '');
+
+      populateLanguageSelect(languageSelect, languages, preferredLanguage);
+      rebuildVersionSelect(
+        versionSelect,
+        languages,
+        languageSelect.value,
+        preferredVersion,
+        labels
+      );
+
+      languageSelect.removeAttribute('data-selected');
+      versionSelect.removeAttribute('data-selected');
+
+      languageSelect.addEventListener('change', function() {
+        rebuildVersionSelect(versionSelect, languages, this.value, '', labels);
+      });
+
+      removeButton.addEventListener('click', function() {
+        row.remove();
+        reindexRows();
+      });
+    }
+
+    function updateModeVisibility() {
+      routesSetting.hidden = modeSelect.value !== 'per_page';
+    }
+
+    getRows().forEach(initializeRow);
+    reindexRows();
+    updateModeVisibility();
+
+    modeSelect.addEventListener('change', updateModeVisibility);
+    addButton.addEventListener('click', function() {
+      if (getRows().length >= maxRoutes) {
+        return;
+      }
+
+      var fragment = routeTemplate.content.cloneNode(true);
+      var row = fragment.querySelector('[data-verselinker-language-route]');
+      routesBody.appendChild(fragment);
+      initializeRow(row);
+      reindexRows();
+    });
+  }
+
   function boot() {
-    loadLanguages().then(initAdminSettings);
+    loadLanguages().then(function(languages) {
+      initAdminSettings(languages);
+      initLanguageRoutes(languages);
+    });
   }
 
   if (document.readyState === 'loading') {
