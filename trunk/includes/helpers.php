@@ -69,6 +69,68 @@ function verselinker_sanitize_checkbox($input) {
     return (in_array($input, array(true, 'true', '1', 'on', 'yes'), true));
 }
 
+/**
+ * Normalize a newline-separated list of class names or IDs.
+ *
+ * Values are limited to common WordPress identifier characters so the saved
+ * option can only contain bare names, never CSS selector syntax.
+ *
+ * @param mixed $input Raw setting value.
+ * @return string Normalized newline-separated values.
+ */
+function verselinker_sanitize_exclusion_list($input) {
+    $max_items = 100;
+    $max_length = 128;
+
+    if (!is_string($input)) {
+        return '';
+    }
+
+    $input = wp_unslash($input);
+    $lines = preg_split('/\r\n|\r|\n/', $input);
+
+    if (!is_array($lines)) {
+        return '';
+    }
+
+    $values = array();
+    $seen = array();
+
+    foreach ($lines as $line) {
+        $value = trim($line);
+
+        if (
+            $value === ''
+            || strlen($value) > $max_length
+            || !preg_match('/\A[A-Za-z0-9_-]+\z/D', $value)
+            || isset($seen[$value])
+        ) {
+            continue;
+        }
+
+        $seen[$value] = true;
+        $values[] = $value;
+
+        if (count($values) >= $max_items) {
+            break;
+        }
+    }
+
+    return implode("\n", $values);
+}
+
+/**
+ * Convert a stored exclusion list to a validated array for JavaScript.
+ *
+ * @param mixed $value Stored option value.
+ * @return array<int, string> Valid class names or IDs.
+ */
+function verselinker_exclusion_list_to_array($value) {
+    $value = verselinker_sanitize_exclusion_list($value);
+
+    return $value === '' ? array() : explode("\n", $value);
+}
+
 
 // Evita usar $_POST directamente y satisface el chequeo de nonce.
 add_filter('pre_update_option_verselinker_language', 'verselinker_capture_language_before_update', 10, 3);

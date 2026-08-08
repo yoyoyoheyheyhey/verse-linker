@@ -282,6 +282,52 @@ global $verseLinkerTranslations;
                         </p>
                     </td>
                 </tr>
+                <tr style="background: #f9f9f9; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+                    <th scope="row" style="padding: 10px; vertical-align: top; text-align: left;">
+                        <label for="verselinker_keep_default_exclusions" style="font-weight: bold; color: #555;">
+                            <?php echo esc_html($verseLinkerTranslations['keep_default_exclusions'] ?? 'Keep default exclusions'); ?>
+                        </label>
+                    </th>
+                    <td style="padding: 10px;">
+                        <input id="verselinker_keep_default_exclusions" type="checkbox"
+                            name="verselinker_keep_default_exclusions" value="1"
+                            <?php checked($verselinker_keep_default_exclusions, true); ?>>
+                        <p class="description">
+                            <?php echo esc_html($verseLinkerTranslations['keep_default_exclusions_description'] ??
+                            'When enabled, the legacy default exclusions, including substring matching for sidebar and widget class names and IDs, remain active. Disable this if a theme, plugin, or custom class or ID excludes page content unintentionally. Custom class names and IDs entered below still apply when this option is disabled.'); ?>
+                        </p>
+                    </td>
+                </tr>
+                <tr style="background: #f9f9f9; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+                    <th scope="row" style="padding: 10px; vertical-align: top; text-align: left;">
+                        <label for="verselinker_excluded_classes" style="font-weight: bold; color: #555;">
+                            <?php echo esc_html($verseLinkerTranslations['excluded_classes'] ?? 'Additional excluded class names'); ?>
+                        </label>
+                    </th>
+                    <td style="padding: 10px;">
+                        <textarea id="verselinker_excluded_classes" name="verselinker_excluded_classes"
+                            rows="5" class="large-text code"><?php echo esc_textarea($verselinker_excluded_classes); ?></textarea>
+                        <p class="description">
+                            <?php echo esc_html($verseLinkerTranslations['excluded_classes_description'] ??
+                            'Enter one class name per line without a leading period. Use only letters, numbers, hyphens, and underscores. Elements with an exact matching class token, and their descendants, are excluded. Partial matches are not excluded. Up to 100 names of 128 characters each are saved.'); ?>
+                        </p>
+                    </td>
+                </tr>
+                <tr style="background: #f9f9f9; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+                    <th scope="row" style="padding: 10px; vertical-align: top; text-align: left;">
+                        <label for="verselinker_excluded_ids" style="font-weight: bold; color: #555;">
+                            <?php echo esc_html($verseLinkerTranslations['excluded_ids'] ?? 'Additional excluded IDs'); ?>
+                        </label>
+                    </th>
+                    <td style="padding: 10px;">
+                        <textarea id="verselinker_excluded_ids" name="verselinker_excluded_ids"
+                            rows="5" class="large-text code"><?php echo esc_textarea($verselinker_excluded_ids); ?></textarea>
+                        <p class="description">
+                            <?php echo esc_html($verseLinkerTranslations['excluded_ids_description'] ??
+                            'Enter one ID per line without a leading hash. Use only letters, numbers, hyphens, and underscores. Elements with an exactly matching ID, and their descendants, are excluded. Partial matches are not excluded. Up to 100 IDs of 128 characters each are saved.'); ?>
+                        </p>
+                    </td>
+                </tr>
         </table>
         <div style="margin-top: 20px;">
             <?php submit_button(esc_html($verseLinkerTranslations['save_changes']), 'primary', 'submit', false); ?>

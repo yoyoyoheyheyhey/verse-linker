@@ -33,6 +33,22 @@ function esc_attr($value) {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
+function wp_json_encode($value) {
+    return json_encode($value);
+}
+
+function verselinker_sanitize_checkbox($input) {
+    return in_array($input, array(true, 'true', '1', 'on', 'yes'), true);
+}
+
+function verselinker_exclusion_list_to_array($input) {
+    if (!is_string($input) || $input === '') {
+        return array();
+    }
+
+    return array_values(array_filter(preg_split('/\R/', $input)));
+}
+
 function add_action($hook, $callback, $priority = 10, $accepted_args = 1) {
 }
 
@@ -234,6 +250,11 @@ $frontend_tag = verselinker_add_attributes_to_script(
 );
 verselinker_test_assert_contains('lang="ja"', $frontend_tag, 'The resolved language is passed to the frontend script.');
 verselinker_test_assert_contains('version="JNIV"', $frontend_tag, 'The resolved version is passed to the frontend script.');
+verselinker_test_assert_contains(
+    'data-keep-default-exclusions="true"',
+    $frontend_tag,
+    'The merged frontend tag retains the default exclusion configuration.'
+);
 
 $admin_tag = verselinker_add_attributes_to_admin_script(
     '<script src="verselinker.js"></script>',
