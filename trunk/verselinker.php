@@ -2,6 +2,7 @@
 /**
  * Plugin Name: VerseLinker
  * Plugin URI: https://wordpress.org/plugins/verselinker/
+ * Update URI: false
  * Description: Automatically link Bible verses in your WordPress content. VerseLinker detects scripture references and transforms them into interactive links, allowing users to view verse text directly on your site or access additional context on Bibliatodo.com. Enhance your content with seamless Bible integration!
  * Version: 1.1.12
  * Requires at least: 5.2
