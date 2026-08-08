@@ -6,6 +6,23 @@ return [
     'version_description' => 'If you select a version that includes only the Old Testament or the New Testament, any references to books not included in the selected version will be processed using the default version. 
     For example, if you choose a version that includes only the New Testament and reference Genesis 1:1 (from the Old Testament), the system will automatically use the default version to retrieve the text. 
     This ensures that all references are accurately linked, even when the selected version does not cover the referenced book.',
+    'language_resolution_mode' => 'Language resolution',
+    'language_resolution_fixed' => 'Use the configured language on every page',
+    'language_resolution_per_page' => 'Detect the language for each page',
+    'language_resolution_description' => 'Fixed mode uses the language and Bible version above on every page. Per-page mode follows the resolution order shown below.',
+    'language_resolution_how_it_works' => 'How language resolution works',
+    'language_resolution_url_rule' => 'URL path rule: When a path is entered, the selected language and Bible version are used for matching URLs.',
+    'language_resolution_html_language' => 'HTML language: If no URL rule matches, VerseLinker reads <html lang>. Locale variants are normalized when possible, for example ja-JP to ja and en-US to en. Leave the path blank to override the Bible version for the selected detected language; without an override, the bundled default is used.',
+    'language_resolution_fixed_fallback' => 'Fixed fallback: If neither method resolves a supported language, VerseLinker uses the fixed language and Bible version above.',
+    'language_routes' => 'Per-page language rules',
+    'language_route_path' => 'URL path prefix (optional)',
+    'language_route_path_placeholder' => '/english/ or leave blank for <html lang>',
+    'language_route_language' => 'Language',
+    'language_route_version' => 'Bible version',
+    'language_route_actions' => 'Actions',
+    'language_route_remove' => 'Remove',
+    'language_route_add' => 'Add language route',
+    'language_routes_description' => 'Enter a site-relative URL path to create an explicit URL rule, or leave it blank to create an HTML-language Bible version override. URL rules take precedence, and the longest matching path wins. You can add up to 20 rules.',
     'plugin_description' => 'The VerseLinker plugin settings provide a simple way to customize how Bible references on your website are automatically transformed into interactive links. 
     This plugin detects the Bible citations you publish (e.g., John 3:16) and converts them into links leading to the corresponding passage on Bibliatodo.com. 
     Hovering over a link displays a tooltip with the verse text, allowing users to read the Scripture without leaving your page. 

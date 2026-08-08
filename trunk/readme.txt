@@ -85,7 +85,11 @@ VerseLinker is designed for ease of use and integrates seamlessly into your Word
     *   **Simple Link Mode:** Only links the Bible references to the corresponding study page on BibliaTodo.com. No data is sent to the API in this mode.
 3.  **Select your default Bible version:** Choose the version that will be used for displaying verse text (e.g., NIV, KJV, ESV). You can find a complete list of available versions here: [link a la lista de versiones de bibliatodo.com]
 4.  **Select your default language:** Choose the language for the verse text. VerseLinker supports over 3520 versions of the Bible in 2214 languages. You can find the list of supported languages on the VerseLinker page: [https://www.bibliatodo.com/en/verselinker](https://www.bibliatodo.com/en/verselinker)
-5.  Click "Save Changes".
+5.  **Choose how the language is resolved:** Keep the default fixed mode to use the selected language and version everywhere, or enable per-page detection for multilingual sites.
+6.  **Optional per-page rules:** Add site-relative URL path prefixes such as `/english/` or `/japanese/`, then select the language and Bible version for each path. The longest matching path wins. Leave the path empty to override the Bible version selected from the document `<html lang>` value. Locale variants are normalized when possible, such as `ja-JP` to `ja` and `en-US` to `en`.
+7.  Click "Save Changes".
+
+In per-page mode, VerseLinker resolves each request in this order: an explicit URL path mapping, a supported document `<html lang>` value, and then the fixed language and version. If the document language is supported but has no empty-path version profile, the first bundled version for that language is used. Only one language dictionary is loaded on each page.
 
 **3. How VerseLinker Detects Bible References:**
 
@@ -137,6 +141,8 @@ You can report issues or suggest features by contacting us through our website: 
 == Changelog ==
 
 = 1.1.12 =
+* Added: Optional per-page language and Bible version routing for multilingual sites.
+* Added: URL path mappings take precedence over document language detection, with the existing fixed settings retained as a backward-compatible fallback.
 * Fixed: The settings page now keeps the saved Bible version selected after reloading.
 * Fixed: Removed duplicate registration of the Bible version setting.
 

@@ -34,8 +34,9 @@ add_action('wp_enqueue_scripts', 'verselinker_enqueue_frontend_scripts');
 function verselinker_add_attributes_to_script($tag, $handle, $src) {
     if ('verselinker-frontend' === $handle) {
         // Obtener las opciones
-        $lang = sanitize_text_field(get_option('verselinker_language', 'en'));
-        $version = sanitize_text_field(get_option('verselinker_version', 'KJV'));
+        $language_resolution = verselinker_resolve_frontend_language();
+        $lang = $language_resolution['language'];
+        $version = $language_resolution['version'];
         $data_trueTooltip = get_option('verseLinker_data_trueTooltip', true) ? 'true' : 'false';
         $data_trueCredit = get_option('verseLinker_data_trueCredit', false) ? 'true' : 'false';
         $data_trueLinks = get_option('verseLinker_data_trueLinks', true) ? 'true' : 'false';

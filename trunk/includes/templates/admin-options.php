@@ -84,6 +84,153 @@ global $verseLinkerTranslations;
                         <?php echo nl2br(esc_html($verseLinkerTranslations['version_description'] ?? 'Select a version to be displayed as the priority version.')); ?>
                     </p>
                 </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row" style="text-align: left; font-weight: bold;">
+                    <label for="verselinker_language_resolution_mode">
+                        <?php echo esc_html($verseLinkerTranslations['language_resolution_mode'] ?? 'Language resolution'); ?>
+                    </label>
+                </th>
+                <td>
+                    <select name="verselinker_language_resolution_mode" id="verselinker_language_resolution_mode">
+                        <option value="fixed" <?php selected($verselinker_language_resolution_mode, 'fixed'); ?>>
+                            <?php echo esc_html($verseLinkerTranslations['language_resolution_fixed'] ?? 'Use the configured language on every page'); ?>
+                        </option>
+                        <option value="per_page" <?php selected($verselinker_language_resolution_mode, 'per_page'); ?>>
+                            <?php echo esc_html($verseLinkerTranslations['language_resolution_per_page'] ?? 'Detect the language for each page'); ?>
+                        </option>
+                    </select>
+                    <p class="description">
+                        <?php echo esc_html($verseLinkerTranslations['language_resolution_description'] ??
+                        'Fixed mode uses the language and Bible version above on every page. Per-page mode follows the resolution order shown below.'); ?>
+                    </p>
+                </td>
+            </tr>
+            <tr valign="top" id="verselinker_language_routes_setting">
+                <th scope="row" style="text-align: left; font-weight: bold;">
+                    <?php echo esc_html($verseLinkerTranslations['language_routes'] ?? 'Per-page language rules'); ?>
+                </th>
+                <td>
+                    <div class="notice notice-info inline">
+                        <p>
+                            <strong>
+                                <?php echo esc_html($verseLinkerTranslations['language_resolution_how_it_works'] ?? 'How language resolution works'); ?>
+                            </strong>
+                        </p>
+                        <ol>
+                            <li>
+                                <?php echo esc_html($verseLinkerTranslations['language_resolution_url_rule'] ??
+                                'URL path rule: When a path is entered, the selected language and Bible version are used for matching URLs.'); ?>
+                            </li>
+                            <li>
+                                <?php echo esc_html($verseLinkerTranslations['language_resolution_html_language'] ??
+                                'HTML language: If no URL rule matches, VerseLinker reads <html lang>. Locale variants are normalized when possible, for example ja-JP to ja and en-US to en. Leave the path blank to override the Bible version for the selected detected language; without an override, the bundled default is used.'); ?>
+                            </li>
+                            <li>
+                                <?php echo esc_html($verseLinkerTranslations['language_resolution_fixed_fallback'] ??
+                                'Fixed fallback: If neither method resolves a supported language, VerseLinker uses the fixed language and Bible version above.'); ?>
+                            </li>
+                        </ol>
+                    </div>
+                    <input type="hidden" name="verselinker_language_routes" value="">
+                    <table class="widefat striped verselinker-language-routes-table">
+                        <thead>
+                            <tr>
+                                <th><?php echo esc_html($verseLinkerTranslations['language_route_path'] ?? 'URL path prefix (optional)'); ?></th>
+                                <th><?php echo esc_html($verseLinkerTranslations['language_route_language'] ?? 'Language'); ?></th>
+                                <th><?php echo esc_html($verseLinkerTranslations['language_route_version'] ?? 'Bible version'); ?></th>
+                                <th><span class="screen-reader-text"><?php echo esc_html($verseLinkerTranslations['language_route_actions'] ?? 'Actions'); ?></span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="verselinker_language_routes_rows">
+                            <?php foreach ($verselinker_language_routes as $route_index => $route) : ?>
+                                <?php
+                                $route_language = $verselinker_language_lookup[$route['language']] ?? null;
+                                $route_language_label = is_array($route_language) && !empty($route_language['nombre'])
+                                    ? $route_language['nombre']
+                                    : $route['language'];
+                                $route_version_label = $route['version'];
+
+                                if (is_array($route_language) && !empty($route_language['versiones'])) {
+                                    foreach ($route_language['versiones'] as $route_version) {
+                                        if (
+                                            isset($route_version['abreviacion'])
+                                            && $route_version['abreviacion'] === $route['version']
+                                            && !empty($route_version['nombre_version'])
+                                        ) {
+                                            $route_version_label = $route_version['nombre_version'];
+                                            break;
+                                        }
+                                    }
+                                }
+                                ?>
+                                <tr data-verselinker-language-route>
+                                    <td>
+                                        <input type="text" class="regular-text verselinker-route-path"
+                                            name="verselinker_language_routes[<?php echo esc_attr($route_index); ?>][path]"
+                                            value="<?php echo esc_attr($route['path']); ?>"
+                                            maxlength="200"
+                                            placeholder="<?php echo esc_attr($verseLinkerTranslations['language_route_path_placeholder'] ?? '/english/ or leave blank for <html lang>'); ?>">
+                                    </td>
+                                    <td>
+                                        <select class="verselinker-route-language"
+                                            name="verselinker_language_routes[<?php echo esc_attr($route_index); ?>][language]"
+                                            data-selected="<?php echo esc_attr($route['language']); ?>">
+                                            <option value="<?php echo esc_attr($route['language']); ?>" selected>
+                                                <?php echo esc_html($route_language_label); ?>
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="verselinker-route-version"
+                                            name="verselinker_language_routes[<?php echo esc_attr($route_index); ?>][version]"
+                                            data-selected="<?php echo esc_attr($route['version']); ?>">
+                                            <option value="<?php echo esc_attr($route['version']); ?>" selected>
+                                                <?php echo esc_html($route_version_label); ?>
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="button-link-delete verselinker-remove-language-route">
+                                            <?php echo esc_html($verseLinkerTranslations['language_route_remove'] ?? 'Remove'); ?>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <p>
+                        <button type="button" class="button" id="verselinker_add_language_route">
+                            <?php echo esc_html($verseLinkerTranslations['language_route_add'] ?? 'Add language route'); ?>
+                        </button>
+                    </p>
+                    <p class="description">
+                        <?php echo esc_html($verseLinkerTranslations['language_routes_description'] ??
+                        'Enter a site-relative URL path to create an explicit URL rule, or leave it blank to create an HTML-language Bible version override. URL rules take precedence, and the longest matching path wins. You can add up to 20 rules.'); ?>
+                    </p>
+
+                    <template id="verselinker_language_route_template">
+                        <tr data-verselinker-language-route>
+                            <td>
+                                <input type="text" class="regular-text verselinker-route-path"
+                                    maxlength="200"
+                                    placeholder="<?php echo esc_attr($verseLinkerTranslations['language_route_path_placeholder'] ?? '/english/ or leave blank for <html lang>'); ?>">
+                            </td>
+                            <td>
+                                <select class="verselinker-route-language"></select>
+                            </td>
+                            <td>
+                                <select class="verselinker-route-version"></select>
+                            </td>
+                            <td>
+                                <button type="button" class="button-link-delete verselinker-remove-language-route">
+                                    <?php echo esc_html($verseLinkerTranslations['language_route_remove'] ?? 'Remove'); ?>
+                                </button>
+                            </td>
+                        </tr>
+                    </template>
+                </td>
+            </tr>
 
 
                 <tr style="background: #f9f9f9; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
@@ -135,7 +282,6 @@ global $verseLinkerTranslations;
                         </p>
                     </td>
                 </tr>
-            </tr>
         </table>
         <div style="margin-top: 20px;">
             <?php submit_button(esc_html($verseLinkerTranslations['save_changes']), 'primary', 'submit', false); ?>
